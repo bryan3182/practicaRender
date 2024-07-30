@@ -1,0 +1,110 @@
+{% extends "./plantilla.html" %}
+{% block body %}
+<br><br><br>
+<div class="container">
+    <h1 class="text-center">Gestión de Películas</h1>
+    <div class="row">
+        <div class="col-md-12 text-end">
+            <button class="btn btn-success" onclick="cargarPeliculas();">
+                <i class="fas fa-refresh"></i>
+                Actualizar Películas
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#peliculaModal">
+                <i class="fa-solid fa-plus"></i>
+                Agregar Película
+            </button>
+        </div>
+        <br>
+        <div class="col-md-12" id="contenedor-peliculas"></div>
+    </div>
+</div>
+
+<!-- Modal Película -->
+<div class="modal fade" id="peliculaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nueva Película</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frm_nueva_pelicula">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <label for=""><b>Título:</b></label>
+                    <input type="text" name="titulo" id="titulo" class="form-control" placeholder="Ingrese el título de la película">
+                    <br>
+                    <label for=""><b>Duración:</b></label>
+                    <input type="text" name="duracion" id="duracion" class="form-control" placeholder="Ingrese la duración de la película">
+                    <br>
+                    <label for=""><b>Sinopsis:</b></label>
+                    <input type="text" name="sinopsis" id="sinopsis" class="form-control" placeholder="Ingrese la sinopsis de la película">
+                    <br>
+                    <label for=""><b>Género ID:</b></label>
+                    <input type="text" name="genero_id" id="genero_id" class="form-control" placeholder="Ingrese el ID del género">
+                    <br>
+                    <label for=""><b>Director ID:</b></label>
+                    <input type="text" name="director_id" id="director_id" class="form-control" placeholder="Ingrese el ID del director">
+                    <br>
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Guardar Cambios
+                        </button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-x"></i>
+                            Cerrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+<script>
+    document.getElementById('frm_nueva_pelicula').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        let formData = new FormData(this);
+        let data = {
+            titulo: formData.get('titulo'),
+            duracion: formData.get('duracion'),
+            sinopsis: formData.get('sinopsis'),
+            genero_id: formData.get('genero_id'),
+            director_id: formData.get('director_id')
+        };
+        let response = await fetch("{% url 'insertar_pelicula' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            },
+            body: JSON.stringify(data)
+        });
+        let result = await response.json();
+        if (result.message) {
+            alert(result.message);
+            cargarPeliculas();
+            this.reset();
+            $('#peliculaModal').modal('hide');
+        } else {
+            alert('Error al insertar la película');
+        }
+    });
+
+    async function cargarPeliculas() {
+        let response = await fetch("{% url 'consultar_peliculas' %}");
+        let peliculas = await response.json();
+        let contenedor = document.getElementById('contenedor-peliculas');
+        contenedor.innerHTML = '';
+        peliculas.forEach(pelicula => {
+            let div = document.createElement('div');
+            div.innerHTML = <p>${pelicula.titulo} - ${pelicula.duracion}</p>;
+            contenedor.appendChild(div);
+        });
+    }
+
+    cargarPeliculas();
+</script>
+{% endblock %}

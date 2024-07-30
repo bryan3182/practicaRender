@@ -1,0 +1,76 @@
+{% extends "./plantilla.html" %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Nuevo Director</h3>
+            <form action="{% url 'guardarDirector' %}" 
+            enctype="multipart/form-data"
+            id="frm_nuevo_director"
+            method="post">
+                {% csrf_token %}
+                <label for=""><b>Dni:</b></label>
+                <input type="text" name="dni" class="form-control" id="dni" placeholder="Ingrese el dni del Director">
+                <br>
+                <label for=""><b>Nombre:</b></label>
+                <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Ingrese el nombre del Director">
+                <br>
+                <label for=""><b>Apellido:</b></label>
+                <input type="text" name="apellido" class="form-control" id="apellido" placeholder="Ingrese el apellido del Director">
+                <br>
+                <label for=""><b>Fotografia</b></label>
+                <input type="file" name="foto" id="foto" accept="image/*" required class="form-control">
+                <br>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="{% url 'listadoDirectores' %}" class="btn btn-danger">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+<br><br><br><br><br>
+<script>
+    $("#frm_nuevo_director").validate({
+        rules:{
+            dni:{
+                required: true,
+                minlength: 5,
+                maxlength: 10
+            },
+            nombre:{
+                required: true,
+                minlength: 3,
+                maxlength: 10
+            },
+            apellido:{
+                required: true,
+                minlength: 3,
+                maxlength: 10
+            },
+            foto:{
+                required: true
+            }
+        },
+        messages:{
+            dni:{
+                required: "Por favor ingrese el dni del director",
+                minlength: "El dni del director debe tener al menos 3 caracteres",
+                maxlength: "El dni del director debe tener como máximo 10 caracteres"
+            },
+            nombre:{
+                required: "Por favor ingrese el nombre del director",
+                minlength: "El nombre del director debe tener al menos 3 caracteres",
+                maxlength: "El nombre del director debe tener como máximo 10 caracteres"
+            },
+            apellido:{
+                required: "Por favor ingrese el apellido del director",
+                minlength: "El apellido del director debe tener al menos 3 caracteres",
+                maxlength: "El apellido del director debe tener como máximo 10 caracteres"
+            },
+            foto:{
+                required: "Por favor seleccione una fotografia"
+            }
+        }
+    });
+</script>
+{% endblock %}

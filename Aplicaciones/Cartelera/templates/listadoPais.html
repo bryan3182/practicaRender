@@ -1,0 +1,30 @@
+{% extends "./plantilla.html" %}
+{% block body %}
+<div class="card">
+    <div class="card-title text-center">
+        <h3><b>Listado de Generos</b></h3>
+    </div>
+</div>
+<br>
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Continente</th>
+            <th>Capital</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for paisTemporal in paises %}
+        <tr>
+            <td>{{paisTemporal.id}}</td>
+            <td>{{paisTemporal.nombre}}</td>
+            <td>{{paisTemporal.continente}}</td>
+            <td>{{paisTemporal.capital}}</td>
+            <td></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

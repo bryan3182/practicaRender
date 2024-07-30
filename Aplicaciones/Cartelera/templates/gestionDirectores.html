@@ -1,0 +1,130 @@
+{% extends "./plantilla.html" %}
+{% block body %}
+<br><br><br>
+<div class="container">
+    <h1 class="text-center">Gestión de Directores</h1>
+    <div class="row">
+        <div class="col-md-12 text-end">
+            <button class="btn btn-success" onclick="cargarDirectores();">
+                <i class="fas fa-refresh"></i>
+                Actualizar Directores
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#directorModal">
+                <i class="fa-solid fa-plus"></i>
+                Agregar Director
+            </button>
+        </div>
+        <br><br><br>
+        <div class="col-md-12">
+            <div id="contenedor-directores">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>DNI</th>
+                            <th>Apellido</th>
+                            <th>Nombre</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-directores">
+                        <!-- Aquí se cargarán dinámicamente los directores -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Director -->
+<div class="modal fade" id="directorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo Director</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frm_nuevo_director">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <label for=""><b>DNI:</b></label>
+                    <input type="text" name="dni" id="dni" class="form-control" placeholder="Ingrese el DNI del director">
+                    <br>
+                    <label for=""><b>Apellido:</b></label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese el apellido del director">
+                    <br>
+                    <label for=""><b>Nombre:</b></label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingrese el nombre del director">
+                    <br>
+                    <label for=""><b>Activo:</b></label>
+                    <input type="checkbox" name="estado" id="estado">
+                    <br><br>
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Guardar Cambios
+                        </button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-x"></i>
+                            Cerrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('frm_nuevo_director').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            let data = {
+                dni: formData.get('dni'),
+                apellido: formData.get('apellido'),
+                nombre: formData.get('nombre'),
+                estado: formData.get('estado') ? true : false
+            };
+            let response = await fetch("{% url 'insertar_director' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                },
+                body: JSON.stringify(data)
+            });
+            let result = await response.json();
+            if (result.message) {
+                alert(result.message);
+                cargarDirectores();
+                this.reset();
+                $('#directorModal').modal('hide');
+            } else {
+                alert('Error al insertar el director');
+            }
+        });
+
+        cargarDirectores();
+    });
+
+    async function cargarDirectores() {
+        let response = await fetch("{% url 'consultar_directores' %}");
+        let directores = await response.json();
+        let tbody = document.getElementById('tbody-directores');
+        tbody.innerHTML = ''; // Limpiamos el contenido previo
+        directores.forEach(director => {
+            let row = `
+                <tr>
+                    <td>${director.dni}</td>
+                    <td>${director.apellido}</td>
+                    <td>${director.nombre}</td>
+                    <td>${director.estado ? 'Activo' : 'Inactivo'}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "./plantilla.html" %}
+{% block body %}
+<div class="card">
+    <div class="card-header text-center">
+        <h3>Listado de Directores</h3>
+    </div>
+</div>
+<br>
+<div class="text-end">
+    <a href="{% url 'nuevoDirector' %}" class="btn btn-primary">Agregar Director</a>
+</div>
+<br>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover" id="tbl-directores">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">DNI</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for directorTemporal in directores %}
+            <tr>
+                <td>{{ directorTemporal.id }}</td>
+                <td>{{ directorTemporal.dni }}</td>
+                <td>{{ directorTemporal.apellido }}</td>
+                <td>{{ directorTemporal.nombre }}</td>
+                <td>
+                    <a href="{% url 'editarDirector' directorTemporal.id %}" class="btn btn-warning btn-sm me-1" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'eliminarDirector' directorTemporal.id %}" onclick="return confirm('¿Está seguro?');" class="btn btn-danger btn-sm" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let table = new DataTable('#tbl-directores');
+    });
+</script>
+
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: #fff;
+        border-collapse: collapse;
+    }
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+        background-color: #212529;
+        color: #fff;
+    }
+    .table tbody+tbody {
+        border-top: 2px solid #dee2e6;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+    .btn-warning:hover {
+        background-color: #e0a800;
+        border-color: #d39e00;
+        color: #212529;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        color: #fff;
+    }
+</style>
+
+{% endblock %}
