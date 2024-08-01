@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ojv9j=er#215-1a)fc7x-ehi)h%#%vfb+gh5q22+0hmx8exre3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'practicarender-rx8g.onrender.com').split(',')
 
 
 # Application definition
